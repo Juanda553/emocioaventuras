@@ -40,7 +40,108 @@ function init() {
   root = document.getElementById("app");
   load();
   attachJuice();
+  attachVoice();
   routeToCurrent();
+}
+
+// ----------------------------------------------------------------- narracion (TTS)
+// los niños de 5-6 todavia no leen, asi q el juego se les lee solo:
+// 1) al entrar a cada pantalla narramos la instruccion principal
+// 2) al pasar el mouse por una opcion/boton/texto, narramos ese textito
+// el audicuento usa Sound.setStoryMode(true) para q el hover no le pise la narracion
+
+// hover solo en lo q importa: las opciones de respuesta, los botones grandes y las islas del mapa.
+// caritas/hud/decorativos NO entran para no abrumar al niño con voces
+const VOICE_SEL = ".OptionBtn,.ChoiceCard,.ClassifyItem,.Light,.PrimaryBtn,.StartCta,.Island.is-open,[data-voice]";
+
+let hoveredVoiceEl = null;
+let autoNarrateTimer = null;
+// "generacion" de narracion: si arranca una nueva tanda, las anteriores se cancelan
+let narrateGen = 0;
+// mientras la auto-narracion suena, ignoramos el hover (asi no se corta la pregunta
+// si el cursor cae sobre una respuesta al cargar la pantalla)
+let autoNarrating = false;
+
+function voiceTextOf(el) {
+  if (!el) return "";
+  const dv = el.getAttribute && el.getAttribute("data-voice");
+  if (dv) return dv;
+  // limpiamos el texto: una sola linea, sin espacios raros
+  return (el.textContent || "").replace(/\s+/g, " ").trim();
+}
+
+function attachVoice() {
+  // hover: solo en aparatos con mouse (en tablet/movil no aplica el hover)
+  const canHover = window.matchMedia && window.matchMedia("(hover: hover)").matches;
+  if (!canHover) return;
+  // usamos pointermove (no pointerover) porq pointermove SOLO se dispara cuando el cursor
+  // se mueve de verdad. asi al cargar una pantalla nueva, no se "narra solo" la opcion
+  // q quedo bajo el cursor — y la auto-narracion de la pregunta puede sonar tranquila
+  function checkHover(e) {
+    if (Sound.isMuted() || Sound.isStoryMode() || autoNarrating) return;
+    if (!e.target.closest) return;
+    const el = e.target.closest(VOICE_SEL);
+    if (el === hoveredVoiceEl) return;
+    if (el && el.hasAttribute && el.hasAttribute("disabled")) { hoveredVoiceEl = null; return; }
+    hoveredVoiceEl = el;
+    if (!el) return;
+    const txt = voiceTextOf(el);
+    if (txt) Sound.narrate(txt);
+  }
+  document.addEventListener("pointermove", checkHover);
+}
+
+// narra la instruccion principal de la pantalla actual.
+// junta el globo de la mascota + la pregunta si hay, en partes separadas
+// (cada parte va al manifest por su cuenta — asi no hay concatenaciones q no esten pregrabadas)
+function autoNarrateMain(extra) {
+  if (Sound.isMuted() || Sound.isStoryMode()) return;
+  const parts = [];
+  if (extra) parts.push(extra);
+  const bubble = document.querySelector(".Guide-bubble");
+  if (bubble) parts.push(bubble.textContent.trim());
+  const q = document.querySelector(".QuestionText");
+  if (q) parts.push(q.textContent.trim());
+  // quito repetidos por si la instruccion y la pregunta son iguales
+  const seen = {};
+  const clean = parts.filter(function (p) { if (!p || seen[p]) return false; seen[p] = 1; return true; });
+  if (!clean.length) return;
+  schedulePartsNarrate(clean);
+}
+
+// arranca con un retrasito asi suena DESPUES del click y la pantalla ya pintada
+function scheduleNarrate(text) {
+  schedulePartsNarrate([text]);
+}
+
+function schedulePartsNarrate(parts) {
+  if (autoNarrateTimer) { clearTimeout(autoNarrateTimer); autoNarrateTimer = null; }
+  narrateGen++;
+  autoNarrating = true;
+  // tambien reseteamos el elemento "bajo el cursor" asi al terminar la cola, el primer
+  // pointermove se considera entrada nueva y narra el elemento
+  hoveredVoiceEl = null;
+  const myGen = narrateGen;
+  autoNarrateTimer = setTimeout(function () {
+    autoNarrateTimer = null;
+    narrateSequence(parts, 0, myGen);
+  }, 380);
+}
+
+// reproduce parts[i], parts[i+1], ... encadenadas con onend.
+// si otra narracion arranca, narrateGen cambia y esta cola se descarta sola
+function narrateSequence(parts, i, myGen) {
+  if (myGen !== narrateGen) return;
+  if (i >= parts.length) {
+    if (myGen === narrateGen) autoNarrating = false;
+    return;
+  }
+  Sound.narrate(parts[i], {
+    onend: function () {
+      // pequeña pausa entre partes para q se respiren
+      setTimeout(function () { narrateSequence(parts, i + 1, myGen); }, 120);
+    }
+  });
 }
 
 // feedback divertido para los niños: al tocar cualquier cosa interactiva sale un estallido
@@ -145,6 +246,12 @@ function wireHud() {
   if (mute) mute.addEventListener("click", function () {
     const m = Sound.toggleMute();
     mute.querySelector("i").className = "bi " + (m ? "bi-volume-mute-fill" : "bi-volume-up-fill");
+    // si silencia, tambien cancelo lo q estaba por narrarse
+    if (m) {
+      narrateGen++;
+      autoNarrating = false;
+      if (autoNarrateTimer) { clearTimeout(autoNarrateTimer); autoNarrateTimer = null; }
+    }
   });
   const reset = document.getElementById("resetBtn");
   if (reset) reset.addEventListener("click", function () {
@@ -238,6 +345,8 @@ function renderStart() {
     if (allWorldsDone()) return renderFinal();
     renderMap();
   });
+  // narramos lo q dice el dragoncito
+  scheduleNarrate("El reino de las emociones necesita tu ayuda");
 }
 
 // ----------------------------------------------------------------- mapa de mundos
@@ -263,8 +372,10 @@ function renderMap() {
     // las cerradas usan la misma criatura pero el css las pone en gris (.Island.is-locked .Island-buddy)
     const buddy = drawWorldMascot(w.id, "happy");
     const cls = (isOpen ? "is-open" : "is-locked") + (done ? " is-done" : "") + (i === unlocked && !done ? " is-current" : "");
+    // narramos el nombre del mundo cuando el niño pone el mouse encima (solo islas abiertas)
+    const voiceAttr = isOpen ? ` data-voice="${esc(w.name)}"` : "";
     return `
-      <button class="Island ${cls}" data-index="${i}" ${isOpen ? "" : "disabled"}
+      <button class="Island ${cls}" data-index="${i}"${voiceAttr} ${isOpen ? "" : "disabled"}
               style="left:${spots[i].x}%; top:${spots[i].y}%; --isl:${w.palette.primary}; --isl-bg:${w.palette.bg}; --bob:${(i * 0.7).toFixed(1)}s; animation-delay:${(i * 0.4).toFixed(1)}s">
         ${i === unlocked && !done ? '<span class="Island-here">¡Vas aquí!</span>' : ""}
         <span class="Island-badge"><i class="bi ${stateIcon}"></i></span>
@@ -308,6 +419,8 @@ function renderMap() {
       talkBuddy(b);
     });
   });
+  // narramos el titulo del mapa
+  scheduleNarrate("Mapa del Reino");
 }
 
 // frasecitas de animo q sueltan los compañeros del mapa
@@ -348,6 +461,19 @@ function emotionForWorld(id) {
   return { joy: "happy", sadness: "sad", anger: "angry", fear: "scared", surprise: "surprised", disgust: "disgust" }[id] || "neutral";
 }
 
+// como narrar una carita (las FaceCard son SVG, no tienen texto propio)
+function voiceForEmotion(em) {
+  return {
+    happy: "Carita feliz",
+    sad: "Carita triste",
+    angry: "Carita enojada",
+    scared: "Carita asustada",
+    surprised: "Carita sorprendida",
+    disgust: "Carita de asco",
+    neutral: "Carita tranquila"
+  }[em] || "Carita";
+}
+
 // ----------------------------------------------------------------- intro del mundo
 function enterWorld(i) {
   state.currentWorld = i;
@@ -373,6 +499,8 @@ function renderWorldIntro(i) {
     Sound.ensureCtx(); Sound.click();
     renderChallenge(i, 0);
   });
+  // narramos solo la intro de la mascota (el nombre del mundo se VE en el titulo)
+  autoNarrateMain();
 }
 
 // ----------------------------------------------------------------- marco comun de reto
@@ -412,15 +540,17 @@ function renderChallenge(worldIndex, chIndex) {
   const body = challengeShell(world, chIndex, ch);
 
   switch (ch.type) {
-    case "pick-face": return renderPickFace(body, ch);
-    case "multi-select": return renderMultiSelect(body, ch);
-    case "single-choice": return renderSingleChoice(body, ch);
-    case "story": return renderStory(body, ch);
-    case "audio-story": return renderAudioStory(body, ch);
-    case "traffic-light": return renderTrafficLight(body, ch);
-    case "classify": return renderClassify(body, ch);
-    default: body.textContent = "Reto no disponible";
+    case "pick-face": renderPickFace(body, ch); break;
+    case "multi-select": renderMultiSelect(body, ch); break;
+    case "single-choice": renderSingleChoice(body, ch); break;
+    case "story": renderStory(body, ch); break;
+    case "audio-story": return renderAudioStory(body, ch); // ese maneja su propia narracion
+    case "traffic-light": renderTrafficLight(body, ch); break;
+    case "classify": renderClassify(body, ch); break;
+    default: body.textContent = "Reto no disponible"; return;
   }
+  // narramos la instruccion del reto (la del globo de la mascota) + la pregunta si la hay
+  autoNarrateMain();
 }
 
 // se llama cuando el reto quedo resuelto del todo
@@ -454,10 +584,10 @@ function advance() {
 
 // ----------------------------------------------------------------- reto: elegir carita
 function renderPickFace(body, ch) {
-  // barajo un poco las opciones para q la correcta no quede siempre igual
+  // barajo un poco las opciones para q la correcta no quede siempr igual
   const opts = shuffle(ch.options.slice());
   body.innerHTML = `<div class="FaceGrid">${opts.map(function (o, idx) {
-    return `<button class="FaceCard" data-correct="${o.correct ? 1 : 0}" data-i="${idx}" style="--bob:${(idx * 0.25).toFixed(2)}s">${drawCharacter(o.emotion)}</button>`;
+    return `<button class="FaceCard" data-correct="${o.correct ? 1 : 0}" data-i="${idx}" aria-label="${esc(voiceForEmotion(o.emotion))}" style="--bob:${(idx * 0.25).toFixed(2)}s">${drawCharacter(o.emotion)}</button>`;
   }).join("")}</div>`;
 
   Array.prototype.forEach.call(body.querySelectorAll(".FaceCard"), function (card) {
@@ -612,10 +742,12 @@ function renderAudioStory(body, ch) {
   playBtn.addEventListener("click", function () {
     Sound.ensureCtx();
     if (state === "idle" || state === "ended") {
+      // entramos en modo cuento: hover no narra, no interrumpe
+      Sound.setStoryMode(true);
       Sound.speak(ch.storyText, {
         onstart: function () { setState("playing"); },
-        onend: function () { setState("ended"); },
-        onerror: function () { setState("ended"); }
+        onend: function () { Sound.setStoryMode(false); setState("ended"); },
+        onerror: function () { Sound.setStoryMode(false); setState("ended"); }
       });
       // por si onstart tarda, mostramos pause de una
       setState("playing");
@@ -629,12 +761,14 @@ function renderAudioStory(body, ch) {
   });
 
   restartBtn.addEventListener("click", function () {
+    Sound.setStoryMode(false);
     Sound.speakStop();
     Sound.click();
     setState("idle");
   });
 
   document.getElementById("toQuiz").addEventListener("click", function () {
+    Sound.setStoryMode(false);
     Sound.speakStop();
     Sound.click();
     startQuiz(ch, boxEl);
@@ -669,6 +803,7 @@ function startQuiz(ch, boxEl) {
       });
       list.appendChild(b);
     });
+    scheduleNarrate(q.question);
   }
   showQuestion();
 }
@@ -740,6 +875,7 @@ function trafficQuiz(ch, body) {
       });
       list.appendChild(b);
     });
+    scheduleNarrate(q.question);
   }
   showQ();
 }
@@ -769,6 +905,8 @@ function showLightModal(light) {
   document.getElementById("lightModalText").textContent = light.text;
   const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
   modal.show();
+  // leemos el titulo y el textito del color para el niño
+  scheduleNarrate(light.title + ". " + light.text);
 }
 
 // ----------------------------------------------------------------- reto: clasificar (sorpresa)
@@ -866,6 +1004,7 @@ function showSuccess(message) {
     overlay.remove();
     advance();
   });
+  scheduleNarrate(message);
 }
 
 function showError(message) {
@@ -882,6 +1021,7 @@ function showError(message) {
     Sound.click();
     overlay.remove();
   });
+  scheduleNarrate(message);
 }
 
 function makeOverlay(kind) {
@@ -929,6 +1069,7 @@ function renderReward(world) {
     if (allWorldsDone()) renderFinal();
     else renderMap();
   });
+  scheduleNarrate(world.reward);
 }
 
 // ----------------------------------------------------------------- pantalla final
@@ -954,6 +1095,7 @@ function renderFinal() {
     Sound.click();
     if (confirm("¿Quieres volver a empezar la aventura?")) resetProgress();
   });
+  scheduleNarrate("¡" + GAME.finalBadge + "!");
 }
 
 // ----------------------------------------------------------------- utilidades
