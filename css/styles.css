@@ -1,0 +1,1393 @@
+/* estilos propios encima de bootstrap. la idea es q se vea flat, redondp y alegre */
+
+:root {
+  --world-primary: #7C6FF0;
+  --world-secondary: #A99BFF;
+  --world-accent: #FFD23F;
+  --world-bg: #F3F1FF;
+  --ink: #3a3540;
+  --round: 28px;
+  --shadow: 0 10px 0 rgba(0, 0, 0, 0.08), 0 16px 30px rgba(0, 0, 0, 0.12);
+}
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  /* fuente redondeada sin depender de internet */
+  font-family: system-ui, "Comic Sans MS", "Trebuchet MS", "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: var(--world-bg);
+  transition: background 0.4s ease;
+  overflow-x: hidden;
+}
+
+/* fondos por tipo de pantalla, todos suaves con un degradadito */
+.world-intro-bg, .challenge-bg, .reward-bg {
+  background:
+    radial-gradient(circle at 15% 12%, rgba(255, 255, 255, 0.6), transparent 40%),
+    var(--world-bg);
+}
+.map-bg {
+  background:
+    radial-gradient(circle at 50% 0%, #fff, transparent 45%),
+    linear-gradient(180deg, #EAF6FF, #F3F1FF);
+}
+.final-bg {
+  background:
+    radial-gradient(circle at 50% 10%, #FFF7D6, transparent 55%),
+    linear-gradient(180deg, #FFE9F4, #EAF6FF);
+}
+
+#app { min-height: 100%; }
+
+/* ------------------------------------------------------------- layout pantallas */
+.Screen {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  /* cada vez q se pinta una pantalla entra con un brinqito suave */
+  animation: screenIn 0.4s cubic-bezier(0.2, 0.8, 0.3, 1.2) both;
+}
+.Hud { position: relative; z-index: 2; }
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(22px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.GameTitle {
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--world-primary);
+  margin: 8px 0 0;
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.08);
+}
+.GameSubtitle { font-size: 24px; color: var(--world-secondary); margin: 4px 0 18px; font-weight: 700; }
+.ScreenTitle { font-size: 40px; font-weight: 800; color: var(--world-primary); margin: 10px 0; }
+.ScreenHint { font-size: 22px; color: var(--world-secondary); font-weight: 700; margin: 0 0 18px; }
+.StartText, .IntroText { font-size: 26px; line-height: 1.4; max-width: 720px; margin: 12px auto 24px; }
+.IntroText {
+  background: rgba(255, 255, 255, 0.7);
+  padding: 22px 26px;
+  border-radius: var(--round);
+  box-shadow: var(--shadow);
+}
+
+/* ------------------------------------------------------------- mascota y caras */
+.Mascot { display: inline-block; line-height: 0; }
+.Mascot-lg { width: 200px; }
+.Mascot-md { width: 130px; }
+.Mascot-sm { width: 92px; }
+.MascotSvg { width: 100%; height: auto; }
+.MascotSvg { animation: floaty 3s ease-in-out infinite; }
+.FaceSvg { width: 100%; height: auto; }
+.Mascot-bounce { animation: mascotBounce 0.9s ease infinite; }
+.Mascot-wave { animation: mascotWave 2.4s ease-in-out infinite; }
+@keyframes mascotBounce {
+  0%, 100% { transform: translateY(0); }
+  35% { transform: translateY(-16px) scale(1.04); }
+  60% { transform: translateY(4px) scale(0.98); }
+}
+@keyframes mascotWave {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* ------------------------------------------------------------- botones */
+.PrimaryBtn {
+  /* le digo a bootstrap q el hover/active sigan siendo del color del mundo (si no, los pone transparentes y el boton se ve blanco) */
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--world-primary);
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--world-primary);
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--world-primary);
+  --bs-btn-active-border-color: transparent;
+  min-height: 64px;
+  padding: 0 34px;
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--world-primary);
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.18);
+  transition: transform 0.08s ease, filter 0.2s ease;
+}
+.PrimaryBtn:hover { color: #fff; filter: brightness(1.05); }
+.PrimaryBtn:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18); }
+.PrimaryBtn:focus-visible { outline: 4px solid var(--world-accent); outline-offset: 3px; }
+
+.IconBtn {
+  --bs-btn-color: var(--world-primary);
+  --bs-btn-bg: #fff;
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-color: var(--world-primary);
+  --bs-btn-hover-bg: #fff;
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-color: var(--world-primary);
+  --bs-btn-active-bg: #fff;
+  --bs-btn-active-border-color: transparent;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--world-primary);
+  font-size: 24px;
+  border: none;
+  box-shadow: var(--shadow);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.IconBtn:hover { color: var(--world-primary); filter: brightness(1.02); }
+.IconBtn:focus-visible { outline: 4px solid var(--world-accent); outline-offset: 2px; }
+
+/* ------------------------------------------------------------- hud */
+.Hud {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 16px 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.Hud-stars {
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.Hud-stars .bi-star-fill { color: var(--world-accent); }
+.Hud-actions { display: flex; gap: 10px; }
+
+/* ------------------------------------------------------------- mapa */
+.WorldGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  width: 100%;
+  margin-top: 10px;
+}
+.WorldCard {
+  background: var(--card-bg, #fff);
+  border: 5px solid var(--card-primary, #ccc);
+  border-radius: var(--round);
+  padding: 18px 14px 14px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.12s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.WorldCard.is-open:hover { transform: translateY(-6px) scale(1.02); }
+.WorldCard-face { width: 96px; }
+.WorldCard-name { font-size: 22px; font-weight: 800; color: var(--ink); }
+.WorldCard-state { font-size: 30px; color: var(--card-primary, #888); }
+.WorldCard.is-locked { filter: grayscale(0.7) opacity(0.75); cursor: not-allowed; }
+.WorldCard.is-locked .WorldCard-state { color: #9aa0a6; }
+.WorldCard.is-done { border-style: dashed; }
+.WorldCard.is-done .WorldCard-state { color: #34a853; }
+
+/* ------------------------------------------------------------- reto: marco */
+.ChallengeScreen { width: 100%; }
+.ChallengeHead { width: 100%; max-width: 820px; }
+.ChallengeStep {
+  display: inline-block;
+  background: var(--world-secondary);
+  color: #fff;
+  font-weight: 800;
+  font-size: 18px;
+  padding: 4px 16px;
+  border-radius: 999px;
+}
+.ChallengeTitle { font-size: 36px; font-weight: 800; color: var(--world-primary); margin: 10px 0 4px; }
+.ChallengeInstruction { font-size: 26px; margin: 0 0 18px; }
+.ChallengeBody { width: 100%; max-width: 860px; }
+.ChallengeActions { margin-top: 26px; }
+.QuestionText { font-size: 28px; font-weight: 700; margin: 6px 0 20px; }
+
+/* ------------------------------------------------------------- elegir carita */
+.FaceGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+.FaceCard {
+  background: #fff;
+  border: 5px solid transparent;
+  border-radius: var(--round);
+  padding: 12px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.12s ease, border-color 0.2s ease;
+}
+.FaceCard:hover { transform: translateY(-6px) scale(1.03); border-color: var(--world-accent); }
+.FaceCard:focus-visible { outline: 4px solid var(--world-accent); outline-offset: 3px; }
+
+/* ------------------------------------------------------------- tarjetas seleccion multiple */
+.CardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px;
+}
+.ChoiceCard {
+  position: relative;
+  background: #fff;
+  border: 5px solid transparent;
+  border-radius: var(--round);
+  padding: 22px 14px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  transition: transform 0.14s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.ChoiceCard-ico {
+  width: 88px; height: 88px; border-radius: 50%;
+  background: #fff; border: 4px solid var(--world-secondary);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s ease, border-color 0.2s ease;
+}
+.ChoiceCard-ico i { font-size: 46px; color: var(--world-primary); }
+.ChoiceCard-txt { font-size: 22px; font-weight: 800; color: var(--ink); }
+.ChoiceCard-check {
+  position: absolute; top: 10px; right: 10px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #34a853; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  transform: scale(0) rotate(-30deg);
+  transition: transform 0.22s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.ChoiceCard:hover { transform: translateY(-7px) scale(1.04) rotate(-0.8deg); box-shadow: 0 18px 30px rgba(0, 0, 0, 0.16); }
+.ChoiceCard:active { transform: translateY(-1px) scale(0.97); }
+.ChoiceCard.is-selected { border-color: var(--world-primary); background: #fff8e6; }
+.ChoiceCard.is-selected .ChoiceCard-ico { border-color: var(--world-primary); transform: scale(1.06); }
+.ChoiceCard.is-selected .ChoiceCard-check { transform: scale(1) rotate(0); }
+
+/* ------------------------------------------------------------- listas de opciones */
+.OptionList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 620px;
+  margin: 0 auto;
+}
+.OptionBtn {
+  min-height: 64px;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--ink);
+  background: #fff;
+  border: 4px solid var(--world-secondary);
+  border-radius: 999px;
+  padding: 12px 26px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.1s ease, background 0.2s ease;
+}
+.OptionBtn:hover { transform: translateY(-3px); background: #fffdf5; }
+.OptionBtn:focus-visible { outline: 4px solid var(--world-accent); outline-offset: 2px; }
+
+/* animacion suave cuando se elige mal */
+.is-wrong { animation: shake 0.4s; border-color: #ff6b6b !important; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+/* ------------------------------------------------------------- audiocuento */
+.StoryBox {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: var(--round);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+.StoryTitle { font-size: 28px; font-weight: 800; color: var(--world-primary); margin: 0 0 16px; }
+.StoryText {
+  font-size: 22px;
+  line-height: 1.5;
+  text-align: left;
+  max-height: 320px;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 18px;
+  padding: 18px 20px;
+  margin-bottom: 22px;
+}
+.AudioPlayer { display: flex; align-items: center; gap: 16px; justify-content: center; margin-bottom: 22px; }
+.PlayBtn {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--world-primary);
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--world-primary);
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--world-primary);
+  --bs-btn-active-border-color: transparent;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--world-primary);
+  color: #fff;
+  font-size: 44px;
+  border: none;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.PlayBtn:hover { color: #fff; filter: brightness(1.05); }
+.PlayBtn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18); }
+/* boton chiquito de "volver a empezar" al lado del play */
+.PlayBtn-secondary { width: 56px; height: 56px; font-size: 26px; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.16); }
+.AudioHint { font-size: 20px; color: var(--world-secondary); font-weight: 700; }
+.QuizProgress { font-size: 18px; font-weight: 800; color: var(--world-secondary); margin-bottom: 10px; }
+
+/* ------------------------------------------------------------- semaforo */
+.TrafficLight {
+  display: flex;
+  justify-content: center;
+  gap: 26px;
+  flex-wrap: wrap;
+  margin: 10px 0 6px;
+}
+.Light {
+  background: #2b2b34;
+  border: none;
+  border-radius: 26px;
+  padding: 18px 14px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.12s ease;
+}
+.Light:hover { transform: translateY(-5px); }
+.Light-bulb {
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  display: block;
+  opacity: 0.55;
+  transition: opacity 0.2s ease, box-shadow 0.2s ease;
+}
+.Light-label { color: #fff; font-weight: 800; font-size: 20px; }
+.Light-red .Light-bulb { background: #ff4d4d; }
+.Light-yellow .Light-bulb { background: #ffd23f; }
+.Light-green .Light-bulb { background: #51cf66; }
+.Light.is-seen .Light-bulb { opacity: 1; box-shadow: 0 0 24px currentColor; }
+.Light-red.is-seen .Light-bulb { box-shadow: 0 0 26px #ff4d4d; }
+.Light-yellow.is-seen .Light-bulb { box-shadow: 0 0 26px #ffd23f; }
+.Light-green.is-seen .Light-bulb { box-shadow: 0 0 26px #51cf66; }
+
+/* modal de bootstrap personalizado para los colores del semaforo */
+.LightModal { border-radius: var(--round); border: none; text-align: center; }
+.LightModal .modal-body { padding: 32px; }
+.LightModal-title { font-size: 34px; font-weight: 800; margin-bottom: 12px; }
+.LightModal-text { font-size: 24px; margin-bottom: 24px; }
+.LightModal[data-color="red"] .LightModal-title { color: #e63946; }
+.LightModal[data-color="yellow"] .LightModal-title { color: #f0a500; }
+.LightModal[data-color="green"] .LightModal-title { color: #2f9e44; }
+
+/* ------------------------------------------------------------- clasificar */
+.ClassifyPool {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  min-height: 70px;
+  margin-bottom: 22px;
+}
+.ClassifyItem {
+  background: #fff;
+  border: 4px solid var(--world-secondary);
+  border-radius: 999px;
+  padding: 14px 22px;
+  font-size: 22px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.1s ease;
+}
+.ClassifyItem:hover { transform: translateY(-3px); }
+.ClassifyItem.is-selected { border-color: var(--world-primary); background: #fff8e6; transform: scale(1.05); }
+.ClassifyItem.is-placed { border-style: dashed; opacity: 0.85; cursor: default; box-shadow: none; }
+.ClassifyBoxes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.ClassifyBox {
+  background: rgba(255, 255, 255, 0.7);
+  border: 5px dashed var(--world-primary);
+  border-radius: var(--round);
+  padding: 16px;
+  min-height: 180px;
+}
+.ClassifyBox.is-over { background: #fff7d6; border-style: solid; }
+.ClassifyBox-title { font-size: 24px; font-weight: 800; color: var(--world-primary); margin-bottom: 12px; }
+.ClassifyBox-drop { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+
+/* ------------------------------------------------------------- overlays feedback */
+.Overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1080;
+  padding: 20px;
+  animation: fadein 0.2s ease;
+}
+.Overlay-ok { background: rgba(46, 160, 67, 0.35); }
+.Overlay-soft { background: rgba(60, 60, 80, 0.3); }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+.FeedbackCard {
+  background: #fff;
+  border-radius: var(--round);
+  padding: 30px 34px;
+  max-width: 460px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  border: 6px solid #6BCB77;
+  animation: pop 0.3s ease;
+}
+.FeedbackCard-soft { border-color: var(--world-secondary); }
+.FeedbackText { font-size: 26px; font-weight: 700; margin: 14px 0 18px; }
+.FeedbackStar { font-size: 28px; font-weight: 800; color: #f0a500; margin-bottom: 18px; }
+.FeedbackStar .bi-star-fill { color: var(--world-accent); }
+.FeedbackIcon { font-size: 54px; color: var(--world-secondary); }
+@keyframes pop {
+  0% { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ------------------------------------------------------------- recompensa / final */
+.BadgeWon {
+  background: #fff;
+  border-radius: 999px;
+  padding: 14px 28px;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--world-primary);
+  box-shadow: var(--shadow);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 24px;
+}
+.BadgeWon .bi { color: var(--world-accent); font-size: 32px; }
+
+.TrophyBig { font-size: 120px; color: #FFB200; text-shadow: 0 6px 0 rgba(0, 0, 0, 0.12); }
+.FinalBadges {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  max-width: 720px;
+  margin: 18px auto 26px;
+}
+.FinalBadge {
+  background: #fff;
+  border-radius: 20px;
+  padding: 16px 12px;
+  font-size: 20px;
+  font-weight: 800;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.FinalBadge .bi { font-size: 34px; color: #FFB200; }
+
+/* confeti sencillo con gradientes, solo decoratvo */
+.Confetti {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 100%;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, #FF5DA2 3px, transparent 4px),
+    radial-gradient(circle, #1FC8C8 3px, transparent 4px),
+    radial-gradient(circle, #FFD23F 3px, transparent 4px);
+  background-size: 120px 120px, 90px 90px, 150px 150px;
+  background-position: 0 0, 40px 60px, 80px 20px;
+  opacity: 0.5;
+}
+
+/* ------------------------------------------------------------- responsive */
+@media (max-width: 760px) {
+  .WorldGrid { grid-template-columns: repeat(2, 1fr); }
+  .FaceGrid { grid-template-columns: repeat(2, 1fr); }
+  .FinalBadges { grid-template-columns: repeat(2, 1fr); }
+  .GameTitle { font-size: 38px; }
+  .ScreenTitle { font-size: 32px; }
+}
+
+/* si el usuario pidio menos movimiento, le bajamos a las animaciones */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .Scene { display: none; }
+}
+
+/* =====================================================================
+   NUEVO LOOK DE JUEGO: personajes, islas, escenarios, celebraciones
+   ===================================================================== */
+
+/* ------------------------------------------------------------- personajes */
+.CharacterSvg { width: 100%; height: auto; transform-origin: 50% 100%; animation: breathe 2.6s ease-in-out infinite; animation-delay: var(--bob, 0s); }
+@keyframes breathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.02); }
+}
+
+/* IDLE dinamico: cada personaje hace algo distinto (balanceo / saltito con rebote / bamboleo).
+   el shorthand resetea el delay, por eso lo vuelvo a poner con --bob para destantearlos */
+.CharacterSvg.idleSway { animation: idleSway 3.6s ease-in-out infinite; animation-delay: var(--bob, 0s); }
+.CharacterSvg.idleHop { animation: idleHop 3s ease-in-out infinite; animation-delay: var(--bob, 0s); }
+.CharacterSvg.idleWobble { animation: idleWobble 2.9s ease-in-out infinite; animation-delay: var(--bob, 0s); }
+@keyframes idleSway {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-5px) rotate(-3.5deg); }
+  50% { transform: translateY(-1px) rotate(0deg); }
+  75% { transform: translateY(-5px) rotate(3.5deg); }
+}
+@keyframes idleHop {
+  0%, 55%, 100% { transform: translateY(0) scale(1, 1); }
+  62% { transform: translateY(0) scale(1.06, 0.9); }
+  74% { transform: translateY(-15px) scale(0.94, 1.1); }
+  84% { transform: translateY(0) scale(1.06, 0.92); }
+  92% { transform: translateY(0) scale(1, 1); }
+}
+@keyframes idleWobble {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  20% { transform: rotate(5deg) translateY(-2px); }
+  45% { transform: rotate(-5deg) translateY(-4px); }
+  70% { transform: rotate(3deg) translateY(-2px); }
+}
+/* los compañeros del mapa tambien con idle dinamico (uno se balancea, el otro bambolea) */
+.MapBuddy-left .MascotSvg { transform-origin: 50% 85%; animation: idleSway 3.8s ease-in-out infinite; animation-delay: var(--bob, 0s); }
+.MapBuddy-right .MascotSvg { transform-origin: 50% 85%; animation: idleWobble 3.2s ease-in-out infinite; animation-delay: var(--bob, 0s); }
+
+/* ------------------------------------------------------------- mascota guia con globo */
+.Guide {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: center;
+  max-width: 780px;
+  margin: 8px auto 22px;
+}
+.Guide-mascot { width: 104px; flex: 0 0 auto; }
+.Guide-bubble {
+  position: relative;
+  background: #fff;
+  border-radius: 26px;
+  padding: 18px 24px;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+/* la colita del globo apuntndo a la mascota */
+.Guide-bubble::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 12px solid transparent;
+  border-right-color: #fff;
+}
+
+/* ------------------------------------------------------------- barrita de progreso */
+.Progress { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.Pips { display: flex; gap: 8px; }
+.Pip {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #fff; border: 2px solid var(--world-secondary);
+  transition: transform 0.2s ease;
+}
+.Pip.done { background: var(--world-accent); border-color: var(--world-accent); }
+.Pip.now { background: var(--world-primary); border-color: var(--world-primary); transform: scale(1.25); box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.06); }
+
+/* ------------------------------------------------------------- mapa: islas flotantes */
+.MapScreen { max-width: 1240px; }
+.Archipelago { position: relative; width: 100%; max-width: 1120px; height: 620px; margin: 6px auto 0; }
+.Archi-paths { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+.Archi-paths path { fill: none; stroke: var(--world-secondary); stroke-width: 0.7; stroke-dasharray: 2.5 3; stroke-linecap: round; opacity: 0.55; }
+
+.Island {
+  position: absolute;
+  width: 168px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+  animation: floatIsland 4s ease-in-out infinite;
+}
+.Island-here {
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: var(--world-primary);
+  color: #fff;
+  font-weight: 800;
+  font-size: 16px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  z-index: 4;
+  animation: tagPulse 1.4s ease-in-out infinite;
+}
+.Island-buddy { width: 84px; line-height: 0; position: relative; z-index: 2; }
+.Island-rock {
+  width: 124px;
+  margin-top: -30px;
+  line-height: 0;
+  position: relative; z-index: 1;
+}
+.IslandSvg { width: 100%; height: auto; display: block; filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.18)); }
+.Island-name {
+  margin-top: 10px;
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+.Island-badge {
+  position: absolute;
+  top: 18px; right: 18px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: var(--shadow);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; color: var(--isl);
+  z-index: 3;
+}
+.Island.is-open:hover { animation-play-state: paused; }
+.Island.is-open:hover .Island-buddy { transform: scale(1.08); transition: transform 0.15s ease; }
+.Island.is-current { animation-duration: 2.4s; }
+.Island.is-current .IslandSvg { filter: drop-shadow(0 0 14px var(--world-accent)) drop-shadow(0 12px 16px rgba(0, 0, 0, 0.18)); }
+.Island.is-done .Island-badge { color: #34a853; }
+.Island.is-locked { cursor: not-allowed; animation: none; }
+.Island.is-locked .Island-buddy { filter: grayscale(1) opacity(0.55); }
+.Island.is-locked .IslandSvg { filter: grayscale(1) brightness(0.95) drop-shadow(0 12px 16px rgba(0, 0, 0, 0.12)); }
+.Island.is-locked .Island-name { color: #9aa0a6; }
+.Island.is-locked .Island-badge { color: #9aa0a6; }
+
+@keyframes floatIsland {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+@keyframes tagPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+/* ------------------------------------------------------------- capa de escenario */
+.Scene {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.Scene > * { position: absolute; }
+
+/* sol, nubes, globos (alegria / inicio) */
+.sky-sun {
+  top: -50px; right: -50px; width: 180px; height: 180px; border-radius: 50%;
+  background: radial-gradient(circle, #FFE89A, #FFC93C);
+  box-shadow: 0 0 70px rgba(255, 210, 63, 0.6);
+  animation: spin 30s linear infinite;
+}
+.sky-cloud {
+  top: 20%; width: 240px; height: 72px; border-radius: 999px;
+  background: #fff; opacity: 0.92;
+  animation: drift 26s linear infinite;
+}
+.sky-cloud::before, .sky-cloud::after { content: ""; position: absolute; background: #fff; border-radius: 50%; }
+.sky-cloud::before { width: 100px; height: 100px; top: -46px; left: 30px; }
+.sky-cloud::after { width: 132px; height: 132px; top: -66px; left: 94px; }
+.sky-cloud.big { width: 340px; height: 100px; }
+.sky-cloud.big::before { width: 142px; height: 142px; top: -64px; left: 44px; }
+.sky-cloud.big::after { width: 186px; height: 186px; top: -96px; left: 132px; }
+.sky-cloud.sm { width: 160px; height: 50px; }
+.sky-cloud.sm::before { width: 66px; height: 66px; top: -30px; left: 20px; }
+.sky-cloud.sm::after { width: 88px; height: 88px; top: -44px; left: 62px; }
+.sky-balloon {
+  bottom: -80px; width: 34px; height: 44px; border-radius: 50% 50% 48% 48%;
+  background: var(--bc, #FF8C42); opacity: 0.85;
+  animation: rise 10s linear infinite;
+}
+.sky-balloon::after { content: ""; position: absolute; bottom: -16px; left: 50%; width: 1px; height: 16px; background: rgba(0, 0, 0, 0.25); }
+
+/* lluvia (tristeza) */
+.rain-drop {
+  top: -12%; width: 3px; height: 18px; border-radius: 2px;
+  background: linear-gradient(#5B8DEF, rgba(91, 141, 239, 0));
+  animation: rainfall 1.2s linear infinite;
+}
+
+/* volcan y brasas (enojo) */
+.volcano {
+  bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 150px solid transparent; border-right: 150px solid transparent;
+  border-bottom: 190px solid #8a4a3a; opacity: 0.45;
+}
+.ember {
+  bottom: 150px; width: 9px; height: 9px; border-radius: 50%;
+  background: #FF7B54; box-shadow: 0 0 8px #FF7B54;
+  animation: emberUp 3s linear infinite;
+}
+
+/* luna y estrellas (miedo) */
+.night-moon {
+  top: 8%; right: 10%; width: 90px; height: 90px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #FFF6D6, #FFD56B);
+  box-shadow: 0 0 50px rgba(255, 213, 107, 0.5);
+}
+.twinkle {
+  width: var(--sz, 5px); height: var(--sz, 5px); border-radius: 50%;
+  background: #FFF3B0; box-shadow: 0 0 6px #fff;
+  animation: twk 2.4s ease-in-out infinite;
+}
+
+/* chispas y signos (sorpresa) */
+.spark {
+  width: 12px; height: 12px;
+  background: radial-gradient(circle, #FFD23F 30%, transparent 32%);
+  animation: twk 2s ease-in-out infinite;
+}
+.qmark { font-size: 30px; font-weight: 800; color: #FF5DA2; opacity: 0.5; animation: qfloat 5s ease-in-out infinite; }
+
+/* burbujas y hojas (asco) */
+.bubble {
+  bottom: -40px; width: var(--bsz, 16px); height: var(--bsz, 16px); border-radius: 50%;
+  background: rgba(91, 174, 79, 0.25); border: 2px solid rgba(91, 174, 79, 0.4);
+  animation: bubbleUp 6s linear infinite;
+}
+.leaf {
+  top: -8%; width: 18px; height: 12px; border-radius: 0 100% 0 100%;
+  background: #8AC36A; opacity: 0.7;
+  animation: leaffall 7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes drift { from { transform: translateX(-140px); } to { transform: translateX(110vw); } }
+@keyframes rise { from { transform: translateY(0); opacity: 0.85; } to { transform: translateY(-112vh); opacity: 0.15; } }
+@keyframes rainfall { from { transform: translateY(-12vh); opacity: 0; } 12% { opacity: 0.7; } to { transform: translateY(112vh); opacity: 0.15; } }
+@keyframes emberUp { from { transform: translateY(0) scale(1); opacity: 0.9; } to { transform: translateY(-150px) scale(0.4); opacity: 0; } }
+@keyframes twk { 0%, 100% { transform: scale(0.7); opacity: 0.4; } 50% { transform: scale(1.2); opacity: 1; } }
+@keyframes qfloat { 0%, 100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-16px) rotate(6deg); } }
+@keyframes bubbleUp { from { transform: translateY(0); opacity: 0.7; } to { transform: translateY(-110vh); opacity: 0; } }
+@keyframes leaffall { from { transform: translateY(-8vh) rotate(0); opacity: 0; } 12% { opacity: 0.7; } to { transform: translateY(112vh) rotate(220deg); opacity: 0.2; } }
+
+/* ------------------------------------------------------------- confeti */
+.ConfettiLayer { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 1200; }
+.confetti-piece {
+  position: absolute; top: -12%; border-radius: 2px;
+  animation-name: confFall; animation-timing-function: linear; animation-iteration-count: 1;
+}
+@keyframes confFall {
+  from { transform: translateY(-12vh) rotate(0); opacity: 1; }
+  to { transform: translateY(112vh) rotate(var(--rot, 360deg)); opacity: 0.9; }
+}
+
+/* ------------------------------------------------------------- estrella q vuela al contador */
+.FlyStar {
+  position: fixed; z-index: 1300; pointer-events: none;
+  font-size: 46px; color: var(--world-accent, #FFC93C);
+  transform: translate(-50%, -50%) scale(1.5);
+  filter: drop-shadow(0 0 8px rgba(255, 210, 63, 0.8));
+  transition: left 0.75s cubic-bezier(0.4, 0, 0.6, 1), top 0.75s cubic-bezier(0.4, 0, 0.6, 1), transform 0.75s ease, opacity 0.75s ease;
+}
+.Hud-stars.bump { animation: bump 0.42s ease; }
+@keyframes bump { 0%, 100% { transform: scale(1); } 45% { transform: scale(1.28); } }
+
+/* la tarjeta de feedback ahora entra con mas rebote */
+.FeedbackCard-pop { animation: cardPop 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.4) both; }
+@keyframes cardPop {
+  0% { transform: scale(0.6) translateY(20px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* ------------------------------------------------------------- responsive islas */
+/* en pantallas chicas el mapa pasa a apilarse y se permite scroll (respaldo) */
+@media (max-width: 900px) {
+  .Archipelago { height: auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; }
+  .Island { position: static !important; left: auto !important; top: auto !important; }
+  .Archi-paths { display: none; }
+}
+@media (max-width: 820px) {
+  .Guide { flex-direction: column; }
+  .Guide-bubble::before { left: 50%; top: -14px; transform: translateX(-50%); border-right-color: transparent; border-bottom-color: #fff; }
+}
+
+/* =====================================================================
+   FONDO DE MAPA VIVO (mini-islas + parallax) Y BOTONES MAS JUGABLES
+   ===================================================================== */
+
+/* capas de parallax: el wrapper se mueve con el puntero, el hijo hace su propia animacion */
+.Scene .par { position: absolute; transition: transform 0.25s ease-out; will-change: transform; }
+.Scene .par > * { position: relative; }
+
+/* mini-islas flotando a lo lejos en el cielo del mapa */
+.far-island {
+  display: block; width: 72px; height: 28px; border-radius: 50%;
+  background: var(--fi, #8AC36A); opacity: 0.5;
+  animation: floatFar 9s ease-in-out infinite;
+}
+.far-island::after {
+  content: ""; position: absolute; top: 19px; left: 50%; transform: translateX(-50%);
+  border-left: 20px solid transparent; border-right: 20px solid transparent;
+  border-top: 26px solid rgba(120, 82, 50, 0.5);
+}
+.far-island.sm { width: 48px; height: 19px; opacity: 0.4; }
+.far-island.sm::after { top: 13px; border-left-width: 13px; border-right-width: 13px; border-top-width: 18px; }
+.far-island.lg { width: 96px; height: 36px; opacity: 0.55; }
+.far-island.lg::after { top: 25px; border-left-width: 27px; border-right-width: 27px; border-top-width: 34px; }
+@keyframes floatFar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+
+/* sol con rayos girando, en una esquina del mapa */
+/* el sol: los RAYOS son el fondo (giran detras) y el disco va encima con ::before */
+.map-sun {
+  top: -10px; right: 40px; width: 200px; height: 200px; border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255, 210, 63, 0) 0deg 13deg, rgba(255, 210, 63, 0.3) 13deg 17deg);
+  animation: spin 44s linear infinite;
+}
+.map-sun::before {
+  content: ""; position: absolute; inset: 42px; border-radius: 50%;
+  background: radial-gradient(circle at 45% 45%, #FFF3C4, #FFD23F 72%);
+  box-shadow: 0 0 70px rgba(255, 210, 63, 0.6);
+}
+
+/* banco de nubes suave al fondo, da profundidad */
+.cloud-bank {
+  left: -10%; right: -10%; bottom: -70px; height: 200px;
+  background: #ffffff; opacity: 0.45; border-radius: 50%;
+  filter: blur(24px);
+}
+
+/* pajaritos volando (dos alas en arco) */
+.bird { display: block; width: 24px; height: 12px; animation: birdFly 16s linear infinite; }
+.bird::before, .bird::after {
+  content: ""; position: absolute; top: 3px; width: 13px; height: 9px;
+  border-top: 3px solid rgba(92, 92, 122, 0.5); border-radius: 50%;
+}
+.bird::before { left: 0; transform: rotate(16deg); }
+.bird::after { left: 11px; transform: rotate(-16deg); }
+@keyframes birdFly {
+  0% { transform: translate(-12vw, 0); }
+  50% { transform: translate(45vw, -14px); }
+  100% { transform: translate(96vw, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-sun, .bird { animation: none; }
+}
+
+/* arcoiris en la esquina (inferior izquierda), saliendo desde ahi, bien tenue de fondo */
+.rainbow { position: absolute; bottom: -50px; left: -70px; width: 460px; height: auto; opacity: 0.2; }
+
+/* ---- detalles animados dentro de cada isla ---- */
+.IslandSvg .i-drop { animation: iDrop 1.1s linear infinite; }
+@keyframes iDrop { 0% { transform: translateY(0); opacity: 0.85; } 85% { opacity: 0.2; } 100% { transform: translateY(12px); opacity: 0; } }
+.IslandSvg .i-smoke { animation: iSmoke 2.6s ease-in infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes iSmoke { 0% { transform: translateY(0) scale(0.8); opacity: 0.5; } 100% { transform: translateY(-16px) scale(1.7); opacity: 0; } }
+.IslandSvg .i-tw { animation: iTw 2.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes iTw { 0%, 100% { transform: scale(0.7); opacity: 0.5; } 50% { transform: scale(1.15); opacity: 1; } }
+.IslandSvg .i-bub { animation: iBub 3.4s ease-in infinite; }
+@keyframes iBub { 0% { transform: translateY(0); opacity: 0.6; } 100% { transform: translateY(-26px); opacity: 0; } }
+.IslandSvg .i-flutter { animation: iFlutter 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes iFlutter { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-3px, -5px); } }
+
+/* ---- compañeros interactivos de los lados del mapa ---- */
+.MapBuddy {
+  position: absolute;
+  width: 100px;
+  background: transparent; border: none; padding: 0; cursor: pointer;
+  z-index: 3;
+}
+.MapBuddy svg { width: 100%; height: auto; }
+.MapBuddy-left { left: 0; top: 38%; }
+.MapBuddy-right { right: 0; top: 38%; }
+.MapBuddy:hover { filter: brightness(1.03); }
+.MapBuddy.is-hop { animation: buddyHop 0.6s ease; }
+@keyframes buddyHop {
+  0%, 100% { transform: translateY(0); }
+  35% { transform: translateY(-28px) scale(1.08); }
+  62% { transform: translateY(5px) scale(0.96); }
+}
+.BuddyTalk {
+  position: absolute; top: -12px; left: 50%;
+  background: #fff; color: var(--ink); font-weight: 800; font-size: 18px;
+  padding: 6px 14px; border-radius: 999px; white-space: nowrap;
+  box-shadow: var(--shadow); pointer-events: none;
+  animation: talkPop 0.25s ease both;
+}
+@keyframes talkPop {
+  from { transform: translateX(-50%) scale(0.4); opacity: 0; }
+  to { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+/* en pantallas chicas escondo los compañeros y el arcoiris para no estorbar las islas */
+@media (max-width: 900px) {
+  .MapBuddy, .rainbow { display: none; }
+}
+
+/* =====================================================================
+   FONDOS RICOS POR EMOCION: suelos, criaturas y mas detalles
+   ===================================================================== */
+
+/* la chispa ahora puede llevar color propio (--sc) para la fiesta de sorpresa */
+.spark { background: radial-gradient(circle, var(--sc, #FFD23F) 30%, transparent 32%); }
+
+/* tinte de ambiente segun la emocion (suave, detras del contenido) */
+.Scene-anger::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 105%, rgba(255, 90, 50, 0.2), transparent 60%); }
+.Scene-fear::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(20, 16, 46, 0), rgba(20, 16, 46, 0.4)); }
+.Scene-sadness::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(150, 170, 210, 0), rgba(150, 170, 210, 0.25)); }
+.Scene-disgust::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 105%, rgba(90, 150, 70, 0.2), transparent 60%); }
+
+/* ---- el "suelo" de cada mundo (banda abajo para q no se vea vacio) ---- */
+.ground { left: -2%; right: -2%; bottom: 0; width: auto; height: 130px; border-top-left-radius: 50% 42px; border-top-right-radius: 50% 42px; z-index: 0; }
+.ground-grass { background: linear-gradient(#7BC96F, #54A046); box-shadow: inset 0 6px 0 #8FD86F; }
+.ground-water { background: linear-gradient(rgba(130, 165, 225, 0.45), rgba(91, 141, 239, 0.5)); box-shadow: inset 0 5px 0 rgba(255, 255, 255, 0.3); }
+.ground-lava { background: linear-gradient(#3a1f1a, #7a2d1f); box-shadow: inset 0 7px 0 #FF7B54, 0 -8px 28px rgba(255, 123, 84, 0.7); animation: lavaGlow 2.6s ease-in-out infinite; }
+.ground-hills { background: linear-gradient(#2a2447, #1c1736); }
+.ground-hills::before, .ground-hills::after { content: ""; position: absolute; bottom: 0; border-radius: 50%; background: #241e40; }
+.ground-hills::before { width: 260px; height: 170px; left: 6%; }
+.ground-hills::after { width: 320px; height: 210px; right: 4%; }
+.ground-confetti { background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 236, 245, 0.6)); }
+.ground-swamp { background: linear-gradient(#6f9050, #4d6c31); box-shadow: inset 0 6px 0 #84a85f; }
+@keyframes lavaGlow { 0%, 100% { box-shadow: inset 0 7px 0 #FF7B54, 0 -8px 28px rgba(255, 123, 84, 0.6); } 50% { box-shadow: inset 0 7px 0 #FFA94D, 0 -8px 34px rgba(255, 123, 84, 0.9); } }
+
+/* ---- mariposas (alegria) ---- */
+.butterfly { width: 18px; height: 14px; animation: flutterPath 9s ease-in-out infinite; }
+.butterfly::before, .butterfly::after { content: ""; position: absolute; top: 0; width: 9px; height: 14px; border-radius: 50%; background: var(--bc, #FF5DA2); opacity: 0.85; }
+.butterfly::before { left: 0; transform-origin: right center; animation: wingL 0.3s ease-in-out infinite alternate; }
+.butterfly::after { right: 0; transform-origin: left center; animation: wingR 0.3s ease-in-out infinite alternate; }
+@keyframes wingL { from { transform: scaleX(1); } to { transform: scaleX(0.4); } }
+@keyframes wingR { from { transform: scaleX(1); } to { transform: scaleX(0.4); } }
+@keyframes flutterPath { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(22px, -18px); } 50% { transform: translate(44px, 4px); } 75% { transform: translate(18px, 20px); } }
+
+/* ---- flores con tallo en el suelo (alegria) ---- */
+.g-flower { bottom: 8px; width: 16px; height: var(--h, 40px); transform-origin: bottom center; animation: sway 4s ease-in-out infinite; }
+.g-flower::before { content: ""; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 3px; height: 100%; background: #3f8a38; }
+.g-flower::after { content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 16px; height: 16px; border-radius: 50%; background: var(--bc, #FF5DA2); box-shadow: 0 4px 0 -3px #FFE08A inset; }
+@keyframes sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+
+/* ---- charcos (tristeza) ---- */
+.puddle { bottom: 16px; width: 96px; height: 18px; border-radius: 50%; background: rgba(130, 165, 225, 0.45); border: 2px solid rgba(130, 165, 225, 0.6); animation: ripple 2.6s ease-in-out infinite; }
+@keyframes ripple { 0%, 100% { transform: scale(1); opacity: 0.55; } 50% { transform: scale(1.1); opacity: 0.85; } }
+
+/* ---- burbujas de lava (enojo) ---- */
+.lava-bubble { bottom: 10px; width: 14px; height: 14px; border-radius: 50%; background: #FF7B54; box-shadow: 0 0 10px #FF7B54; animation: lavaPop 2.8s ease-in infinite; }
+@keyframes lavaPop { 0% { transform: translateY(0) scale(0.6); opacity: 0.8; } 70% { transform: translateY(-18px) scale(1.1); opacity: 1; } 100% { transform: translateY(-26px) scale(0.3); opacity: 0; } }
+
+/* ---- luciernagas y murcielagos (miedo) ---- */
+.firefly { width: 6px; height: 6px; border-radius: 50%; background: #FFF3A0; box-shadow: 0 0 10px 3px rgba(255, 243, 160, 0.8); animation: fireflyMove 8s ease-in-out infinite, fireflyGlow 1.6s ease-in-out infinite; }
+@keyframes fireflyMove { 0%, 100% { transform: translate(0, 0); } 33% { transform: translate(26px, -20px); } 66% { transform: translate(-18px, 14px); } }
+@keyframes fireflyGlow { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+.bat { width: 28px; height: 10px; animation: birdFly 18s linear infinite; }
+.bat::before, .bat::after { content: ""; position: absolute; top: 0; width: 15px; height: 10px; background: #2b2540; border-radius: 60% 60% 0 0; }
+.bat::before { left: 0; transform: rotate(10deg); }
+.bat::after { right: 0; transform: rotate(-10deg); }
+
+/* ---- moscas (asco) ---- */
+.fly { width: 5px; height: 5px; border-radius: 50%; background: #2a2540; animation: buzz 1.5s linear infinite; }
+@keyframes buzz { 0%, 100% { transform: translate(0, 0); } 20% { transform: translate(9px, -7px); } 40% { transform: translate(-7px, 5px); } 60% { transform: translate(7px, 9px); } 80% { transform: translate(-9px, -5px); } }
+
+/* ---- hongos en el suelo (asco) ---- */
+.g-mushroom { bottom: 10px; width: 30px; height: 26px; }
+.g-mushroom::before { content: ""; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 11px; height: 15px; background: #F2E6D0; border-radius: 4px; }
+.g-mushroom::after { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 17px; background: #C24B45; border-radius: 50% 50% 42% 42%; box-shadow: 4px 5px 0 -3px #fff inset, -6px 6px 0 -4px #fff inset; }
+
+/* ---- fiesta de sorpresa: serpentinas, signos y regalos flotando ---- */
+.streamer { top: -12px; width: 10px; height: 120px; border-radius: 6px; transform-origin: top center; animation: sway 3s ease-in-out infinite; }
+.streamer.s1 { background: #FF5DA2; } .streamer.s2 { background: #1FC8C8; } .streamer.s3 { background: #FFD23F; } .streamer.s4 { background: #7C6FF0; }
+.mark { font-size: 34px; font-weight: 800; color: var(--mc, #FF5DA2); opacity: 0.6; animation: qfloat 5s ease-in-out infinite; }
+.gift-float { bottom: -50px; width: 30px; height: 28px; background: var(--bc, #FF5DA2); border-radius: 5px; animation: rise 11s linear infinite; }
+.gift-float::before { content: ""; position: absolute; left: 0; right: 0; top: 42%; height: 5px; background: #fff; opacity: 0.75; }
+.gift-float::after { content: ""; position: absolute; top: 0; bottom: 0; left: 42%; width: 5px; background: #fff; opacity: 0.75; }
+
+@media (prefers-reduced-motion: reduce) {
+  .butterfly, .firefly, .bat, .fly, .puddle, .lava-bubble, .ground-lava, .g-flower, .streamer, .gift-float { animation: none; }
+}
+
+/* =====================================================================
+   FEEDBACK JUGOSO: estallido al tocar + meneo al pasar el mouse
+   ===================================================================== */
+.PopBurst { position: fixed; z-index: 1400; width: 0; height: 0; pointer-events: none; }
+.PopRipple {
+  position: absolute; left: -7px; top: -7px; width: 14px; height: 14px;
+  border-radius: 50%; border: 3px solid var(--world-accent, #FFC93C);
+  animation: popRipple 0.5s ease-out forwards;
+}
+@keyframes popRipple { from { transform: scale(0.4); opacity: 0.85; } to { transform: scale(4.5); opacity: 0; } }
+.PopBit {
+  position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%;
+  animation: popBit 0.65s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+@keyframes popBit {
+  from { transform: translate(0, 0) scale(1); opacity: 1; }
+  to { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
+}
+
+/* al pasar el mouse, la CARA hace una mini animacion de su expresion:
+   da un saltito, parpadea, mueve la boca y levanta las cejas (en vez de menearse a los lados).
+   aplica a TODAS las caritas: las de los retos, las de las islas y los compañeros del mapa */
+.FaceCard:hover .CharacterSvg,
+.Island.is-open:hover .CharacterSvg,
+.Island.is-open:hover .MascotSvg,
+.MapBuddy:hover .MascotSvg { animation: headPop 0.55s ease; }
+.FaceCard:hover .cEyes,
+.Island.is-open:hover .cEyes,
+.MapBuddy:hover .cEyes { animation: blink 0.55s ease; transform-box: fill-box; transform-origin: center; }
+.FaceCard:hover .cMouth,
+.Island.is-open:hover .cMouth,
+.MapBuddy:hover .cMouth { animation: mouthPop 0.55s ease; transform-box: fill-box; transform-origin: center; }
+.FaceCard:hover .cBrows,
+.Island.is-open:hover .cBrows { animation: browsUp 0.55s ease; transform-box: fill-box; transform-origin: center; }
+@keyframes headPop { 0%, 100% { transform: translateY(0) scale(1); } 35% { transform: translateY(-5px) scale(1.05); } 70% { transform: translateY(1px) scale(0.99); } }
+@keyframes blink { 0%, 100% { transform: scaleY(1); } 42% { transform: scaleY(0.12); } 58% { transform: scaleY(1); } }
+@keyframes mouthPop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.32); } }
+@keyframes browsUp { 0%, 100% { transform: translateY(0); } 45% { transform: translateY(-4px); } }
+
+/* IDLE de las caritas: parpadean solitas cada ratico (el cuerpo ya respira con breathe).
+   el --bob de cada tarjeta/isla las destantea para q no parpadeen todas a la vez */
+.CharacterSvg .cEyes, .MascotSvg .cEyes {
+  transform-box: fill-box; transform-origin: center;
+  animation: idleBlink 5s ease-in-out infinite;
+  animation-delay: var(--bob, 0s);
+}
+@keyframes idleBlink { 0%, 90%, 100% { transform: scaleY(1); } 94% { transform: scaleY(0.1); } 97% { transform: scaleY(1); } }
+
+/* el meneo lo dejo solo para las tarjetas de seleccion multiple */
+.ChoiceCard:hover .ChoiceCard-ico { animation: wiggle 0.5s ease; }
+@keyframes wiggle { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-9deg); } 65% { transform: rotate(7deg); } }
+/* la viñeta del boton de opcion da un saltito al hover */
+.OptionBtn:hover::before { animation: bulletPop 0.4s ease; }
+@keyframes bulletPop { 0%, 100% { transform: translateY(-50%) scale(1); } 50% { transform: translateY(-50%) scale(1.35); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .FaceCard:hover .CharacterSvg, .FaceCard:hover .cEyes, .FaceCard:hover .cMouth, .FaceCard:hover .cBrows,
+  .ChoiceCard:hover .ChoiceCard-ico, .OptionBtn:hover::before { animation: none; }
+}
+
+/* =====================================================================
+   CREDITO DEL AUTOR (fijo abajo a la derecha, en todas las pantallas)
+   ===================================================================== */
+.Credit {
+  position: fixed;
+  right: 12px;
+  bottom: 10px;
+  z-index: 60;
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 999px;
+  padding: 5px 13px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  /* idle: flota suavecito para q se note q esta vivo */
+  animation: creditFloat 3.6s ease-in-out infinite;
+}
+@keyframes creditFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.Credit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 4px;
+  font-weight: 800;
+  text-decoration: none;
+  /* degradado tipo instagram */
+  background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #DD2A7B;
+  transition: transform 0.16s cubic-bezier(0.3, 1.5, 0.5, 1), filter 0.2s ease;
+}
+.Credit-link i {
+  font-size: 14px;
+  -webkit-text-fill-color: #DD2A7B;
+  display: inline-block;
+  /* idle: el iconito hace un guiño cada ratico */
+  animation: iconPulse 2.8s ease-in-out infinite;
+}
+@keyframes iconPulse {
+  0%, 72%, 100% { transform: scale(1) rotate(0); }
+  80% { transform: scale(1.22) rotate(-8deg); }
+  90% { transform: scale(1.1) rotate(5deg); }
+}
+.Credit-link:hover { transform: translateY(-3px) scale(1.06); filter: brightness(1.1); }
+/* al pasar el mouse el icono cambia su animacion al meneo (reemplaza el guiño idle) */
+.Credit-link:hover i { animation: wiggle 0.5s ease; }
+.Credit-link:active { transform: translateY(0) scale(0.97); }
+.Credit-link:focus-visible { outline: 3px solid var(--world-accent); outline-offset: 3px; border-radius: 6px; }
+
+/* en pantallas chicas lo hago un poco mas compacto para q no estorbe */
+@media (max-width: 560px) {
+  .Credit { font-size: 13px; padding: 6px 12px; right: 8px; bottom: 8px; }
+  .Credit-link i { font-size: 15px; }
+}
+
+/* ---- caritas/personajes para elegir: mas tactiles ---- */
+.FaceCard {
+  position: relative;
+  transition: transform 0.16s cubic-bezier(0.3, 1.5, 0.5, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.FaceCard:hover {
+  transform: translateY(-12px) scale(1.07);
+  box-shadow: 0 22px 34px rgba(0, 0, 0, 0.2);
+  border-color: var(--world-accent);
+}
+.FaceCard:active { transform: translateY(-2px) scale(0.96); }
+/* un latido muy suave para invitar a tocar (escalonado por tarjeta) */
+.FaceCard::after {
+  content: ""; position: absolute; inset: -4px; border-radius: var(--round);
+  box-shadow: 0 0 0 0 var(--world-accent);
+  animation: invite 2.6s ease-out infinite; animation-delay: var(--bob, 0s);
+  pointer-events: none;
+}
+@keyframes invite {
+  0% { box-shadow: 0 0 0 0 rgba(255, 210, 63, 0.45); }
+  70%, 100% { box-shadow: 0 0 0 16px rgba(255, 210, 63, 0); }
+}
+
+/* ---- botones de opcion: viñeta de color, rebote y hundir al tocar ---- */
+.OptionBtn {
+  position: relative;
+  padding-left: 70px;
+  transition: transform 0.16s cubic-bezier(0.3, 1.5, 0.5, 1), background 0.2s ease, box-shadow 0.2s ease;
+}
+.OptionBtn::before {
+  content: ""; position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--world-primary);
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.18);
+}
+.OptionBtn:hover { transform: translateY(-5px) scale(1.03) rotate(-0.6deg); background: #fffdf5; box-shadow: 0 14px 24px rgba(0, 0, 0, 0.16); }
+.OptionBtn:active { transform: translateY(2px) scale(0.97); }
+
+/* el boton grande tambien con rebote al tocar */
+.PrimaryBtn:active { transform: translateY(5px) scale(0.97); }
+
+/* si pidieron menos movimiento, apago el latido invitador y el parallax no salta */
+@media (prefers-reduced-motion: reduce) {
+  .FaceCard::after { animation: none; }
+  .far-island { animation: none; }
+}
+
+
+/* =====================================================================
+   PANTALLA DE INICIO (HERO): castillo, arboles, dragoncito con bocadillo
+   y boton rosita estilo libro de cuentos (tipo la referencia del cliente)
+   ===================================================================== */
+
+/* el container del start ocupa toda la pantalla y deja a sus hijos posicionarse libres.
+   sobreescribo el flex centrado q tiene .Screen por defecto */
+.StartScreen {
+  min-height: 100vh;
+  max-width: none;
+  padding: 24px 20px 40px;
+  display: block;
+  position: relative;
+}
+.StartScreen-top { text-align: center; position: relative; z-index: 3; }
+
+/* titulo bicolor estilo libro: EMOCIO en azul, AVENTURA en rosa. usa clamp pa q escale */
+.StartScreen .GameTitle,
+.GameTitle-split {
+  font-size: clamp(46px, 9vw, 110px);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  margin: 8px 0 0;
+  text-shadow: 0 4px 0 rgba(0, 0, 0, 0.08), 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+.Title-emocio { color: #2B6FC9; }
+.Title-aventura { color: #E94A78; }
+
+/* subtitulo italica abajo de "AVENTURA" */
+.StartScreen .GameSubtitle,
+.GameSubtitle-italic {
+  font-style: italic;
+  color: #2B6FC9;
+  font-size: clamp(20px, 3vw, 32px);
+  font-weight: 700;
+  margin: 4px 0 0;
+}
+
+/* fondo de cielo gradient para la escena hero (asi se siente "reino flotante" no plano) */
+.Scene-hero {
+  background: linear-gradient(180deg, #B8E0FF 0%, #DCEEFF 55%, #F5FAFF 100%);
+}
+
+/* nube grande esponjosa donde descansa el castillo. va abajo-centro de la pantalla.
+   con drop-shadow se ve flotando */
+.Hero-cloud {
+  position: absolute;
+  bottom: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(520px, 82vw, 1180px);
+  height: clamp(180px, 28vh, 300px);
+  pointer-events: none;
+  z-index: 1;
+  filter: drop-shadow(0 18px 24px rgba(60, 80, 140, 0.22));
+}
+.HeroCloudSvg { width: 100%; height: 100%; display: block; }
+
+/* el castillo descansa encima de la nube grande */
+.Hero-castle {
+  position: absolute;
+  bottom: clamp(150px, 22vh, 240px);
+  left: 50%;
+  width: min(340px, 44%);
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 2;
+}
+.CastleSvg { width: 100%; height: auto; filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.18)); }
+
+/* el dragoncito hero abajo a la izquierda, con su bocadillo arriba */
+.Hero-mascot {
+  position: absolute;
+  bottom: 6%;
+  left: 4%;
+  width: clamp(160px, 18vw, 230px);
+  z-index: 4;
+}
+.Hero {
+  width: 100%;
+  line-height: 0;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+  animation: mascotBounce 1.4s ease-in-out infinite;
+}
+.Hero .MascotSvg { width: 100%; height: auto; transform-origin: 50% 80%; }
+
+/* bocadillo blanco con flechita apuntando al dragoncito */
+.Hero-bubble {
+  position: absolute;
+  bottom: 92%;
+  left: 50%;
+  transform: translateX(-30%);
+  background: #fff;
+  padding: 12px 18px;
+  border-radius: 22px;
+  font-weight: 700;
+  font-size: clamp(13px, 1.4vw, 17px);
+  color: #2c2c3e;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  width: clamp(150px, 16vw, 210px);
+  text-align: center;
+  z-index: 5;
+  line-height: 1.25;
+}
+.Hero-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 18%;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  transform: rotate(45deg);
+  border-radius: 3px;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* boton rosita abajo a la derecha estilo "empezar" */
+.StartCta {
+  position: absolute;
+  bottom: 8%;
+  right: 5%;
+  background: linear-gradient(180deg, #F587B6 0%, #DE5E97 100%);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 16px 44px;
+  font-size: clamp(22px, 2.6vw, 30px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 0 #B43E78, 0 12px 22px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 5;
+  transition: transform 0.1s ease, filter 0.2s ease;
+  text-transform: lowercase;
+  animation: ctaPulse 1.8s ease-in-out infinite;
+}
+.StartCta:hover { filter: brightness(1.05); }
+.StartCta:active {
+  transform: translateY(4px);
+  box-shadow: 0 4px 0 #B43E78, 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+.StartCta:focus-visible { outline: 4px solid rgba(255, 93, 162, 0.5); outline-offset: 3px; }
+@keyframes ctaPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+/* responsive: en pantallas chicas aplastamos un poco y reducimos elementos */
+@media (max-width: 700px) {
+  .Hero-castle { width: 60%; bottom: clamp(120px, 18vh, 180px); }
+  .Hero-cloud { width: 110%; height: clamp(150px, 22vh, 220px); }
+  .Hero-mascot { width: 140px; bottom: 4%; }
+  .Hero-bubble { font-size: 12px; width: 140px; padding: 8px 12px; }
+  .StartCta { padding: 12px 28px; font-size: 20px; bottom: 5%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .StartCta, .Hero { animation: none; }
+}

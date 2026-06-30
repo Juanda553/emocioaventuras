@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Verify cartoon-3D</title>
+  <link rel="stylesheet" href="vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="vendor/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body { background: #F3F1FF; padding: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; max-width: 1400px; margin: 0 auto; }
+    .item { background: white; border-radius: 16px; padding: 16px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .item h3 { font-size: 14px; margin: 0 0 8px; color: #555; }
+    .item .frame { width: 100%; height: 180px; display: flex; align-items: center; justify-content: center; }
+    .item.big .frame { height: 260px; }
+    section { margin-bottom: 32px; }
+    section h2 { font-family: system-ui; color: #555; max-width: 1400px; margin: 0 auto 12px; }
+  </style>
+</head>
+<body>
+  <main id="app"></main>
+
+  <script src="vendor/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/faces.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/scenes.js"></script>
+  <script src="js/engine.js"></script>
+  <script>
+    // override init para no arrancar el juego: solo mostramos las criaturas
+    document.addEventListener("DOMContentLoaded", function () {
+      const root = document.getElementById("app");
+      // "default" = la emocion natural del mundo (joy=happy, sadness=sad, anger=angry, etc)
+      // cheer = celebracion al acertar; oops = cara apenada al fallar
+      const moods = ["default", "cheer", "oops"];
+      const moodLabels = { "default": "emocion del mundo", "cheer": "cheer (acierto)", "oops": "oops (error)" };
+      const worlds = ["joy", "sadness", "anger", "fear", "surprise", "disgust"];
+      const emotions = ["happy", "sad", "angry", "scared", "surprised", "disgust", "neutral"];
+
+      let html = "";
+
+      // drawHero/drawWorldMascot reciben un mood: si pasas "default" (o cualquier no-cheer/no-oops),
+      // la mascota muestra la emocion natural de su mundo (kawaii enojado, kawaii triste, etc)
+      html += `<section><h2>Hero del menu (drawHero) — el dragoncito debe verse kawaii ENOJADO por defecto</h2><div class="grid">`;
+      moods.forEach(function (m) {
+        html += `<div class="item big"><h3>Hero — ${moodLabels[m]}</h3><div class="frame">${drawHero(m)}</div></div>`;
+      });
+      html += `</div></section>`;
+
+      worlds.forEach(function (w) {
+        html += `<section><h2>Mundo: ${w}</h2><div class="grid">`;
+        moods.forEach(function (m) {
+          html += `<div class="item"><h3>${w} — ${moodLabels[m]}</h3><div class="frame">${drawWorldMascot(w, m)}</div></div>`;
+        });
+        html += `</div></section>`;
+      });
+
+      html += `<section><h2>drawCharacter (pick-face)</h2><div class="grid">`;
+      emotions.forEach(function (e) {
+        html += `<div class="item"><h3>${e}</h3><div class="frame">${drawCharacter(e)}</div></div>`;
+      });
+      html += `</div></section>`;
+
+      html += `<section><h2>drawCastle + Hero-cloud (escena hero)</h2>
+        <div style="position: relative; height: 480px; background: linear-gradient(180deg, #B8E0FF 0%, #DCEEFF 60%, #F5FAFF 100%); border-radius: 16px; overflow: hidden; max-width: 1200px; margin: 0 auto;">
+          <div class="Hero-cloud" style="bottom: 8%; left: 50%; transform: translateX(-50%); width: 80%; height: 50%;">${drawCloudBase()}</div>
+          <div class="Hero-castle" style="bottom: 38%; left: 50%; transform: translateX(-50%); width: 30%;">${drawCastle()}</div>
+        </div>
+      </section>`;
+
+      root.innerHTML = html;
+    });
+  </script>
+</body>
+</html>
