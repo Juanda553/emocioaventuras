@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node --check js/faces.js)"
+      "Bash(node --check js/faces.js)",
+      "Bash(node --check c:/Users/juanz/OneDrive/Documentos/Dev/emocioaventuras/js/engine.js)",
+      "Bash(node --check c:/Users/juanz/OneDrive/Documentos/Dev/emocioaventuras/js/audio.js)"
     ]
   }
 }

@@ -76,6 +76,9 @@ const Sound = (function () {
     if (muted) {
       if (currentAudio) { try { currentAudio.pause(); } catch (e) {} currentAudio = null; }
       if (hasSpeech()) window.speechSynthesis.cancel();
+      if (bgAudio) bgAudio.volume = 0;
+    } else {
+      if (bgAudio) bgAudio.volume = bgDuckCount > 0 ? bgDuckVolume : bgBaseVolume;
     }
     return muted;
   }
@@ -147,6 +150,8 @@ const Sound = (function () {
   function stopCurrentAudio() {
     if (currentAudio) {
       try { currentAudio.pause(); } catch (e) {}
+      // desduck si la voz se cortaba con la musica bajada
+      if (typeof currentAudio.__unduck === "function") currentAudio.__unduck();
       currentAudio.onended = null;
       currentAudio.onerror = null;
       currentAudio.onplay = null;
@@ -166,21 +171,39 @@ const Sound = (function () {
       const a = new Audio(mp3);
       currentAudio = a;
       a.volume = 1;
+      let ducked = false;
+      function unduckOnce() { if (ducked) { ducked = false; bgUnduck(); } }
       // usamos las propiedades directas (no addEventListener) asi stopCurrentAudio
       // puede limpiarlas con = null y NO disparar onend cuando el audio se corta a la fuerza
-      a.onplay = function () { if (opts && opts.onstart) opts.onstart(); };
+      a.onplay = function () {
+        if (!ducked) { ducked = true; bgDuck(); } // bajamos la musica mientras suena la voz
+        if (opts && opts.onstart) opts.onstart();
+      };
       a.onended = function () {
+        unduckOnce();
         if (currentAudio === a) currentAudio = null;
         if (opts && opts.onend) opts.onend();
       };
       a.onerror = function () {
+        unduckOnce();
         if (currentAudio === a) currentAudio = null;
         // si falla el mp3 (archivo corrupto, etc.) intentamos TTS como ultimo recurso
         if (hasSpeech()) ttsSpeak(text, opts);
         else if (opts && opts.onerror) opts.onerror();
       };
+      // si stopCurrentAudio nos corta a la fuerza, tenemos q desduck igual
+      a.__unduck = unduckOnce;
       const p = a.play();
-      if (p && typeof p.catch === "function") p.catch(function () { /* el error handler lo agarra */ });
+      if (p && typeof p.catch === "function") {
+        p.catch(function () {
+          // play() rechazada — típicamente cuando el navegador bloquea autoplay
+          // sin q haya habido user gesture (ej. pantalla de inicio antes del primer click).
+          // como fallback intentamos TTS, q a veces si pasa la politica
+          if (currentAudio === a) currentAudio = null;
+          if (hasSpeech() && !muted) ttsSpeak(text, opts);
+          else if (opts && opts.onerror) opts.onerror();
+        });
+      }
       return a;
     }
 
@@ -200,9 +223,19 @@ const Sound = (function () {
     u.rate = (opts && typeof opts.rate === "number") ? opts.rate : defaultRate;
     u.pitch = (opts && typeof opts.pitch === "number") ? opts.pitch : defaultPitch;
     u.volume = 1;
-    if (opts && opts.onend) u.onend = opts.onend;
-    if (opts && opts.onstart) u.onstart = opts.onstart;
-    if (opts && opts.onerror) u.onerror = opts.onerror;
+    let ducked = false;
+    u.onstart = function () {
+      if (!ducked) { ducked = true; bgDuck(); }
+      if (opts && opts.onstart) opts.onstart();
+    };
+    u.onend = function () {
+      if (ducked) { ducked = false; bgUnduck(); }
+      if (opts && opts.onend) opts.onend();
+    };
+    u.onerror = function () {
+      if (ducked) { ducked = false; bgUnduck(); }
+      if (opts && opts.onerror) opts.onerror();
+    };
     window.speechSynthesis.speak(u);
     return u;
   }
@@ -244,10 +277,58 @@ const Sound = (function () {
   }
   function isStoryMode() { return storyMode; }
 
+  // ----- musica de fondo (loop bajito)
+  // un Audio() en loop, volumen 0.1 por defecto. al arrancar a hablar la voz, bajamos
+  // a 0.03 (ducking) y al terminar volvemos a 0.1, asi no compite con la narracion.
+  // la musica solo arranca despues del primer user gesture (politica del navegador)
+  let bgAudio = null;
+  let bgWanted = false;        // el usuario "quiere" musica (no la silencio aposta)
+  let bgBaseVolume = 0.05;     // volumen normal de la musica (bajito, para no tapar la voz)
+  let bgDuckVolume = 0.015;    // volumen mientras suena una voz encima
+  let bgDuckCount = 0;         // cuantas voces estan sonando ahora (puede haber overlap)
+
+  function startBgMusic(src) {
+    if (!src || bgAudio) return;
+    bgWanted = true;
+    bgAudio = new Audio(src);
+    bgAudio.loop = true;
+    bgAudio.volume = muted ? 0 : bgBaseVolume;
+    // si el archivo no existe, fallamos silenciosos
+    bgAudio.onerror = function () { bgAudio = null; };
+    const p = bgAudio.play();
+    if (p && typeof p.catch === "function") {
+      p.catch(function () {
+        // el navegador bloqueo el autoplay. lo reintentamos al proximo user gesture
+        const retry = function () {
+          window.removeEventListener("pointerdown", retry, true);
+          window.removeEventListener("keydown", retry, true);
+          if (bgAudio) bgAudio.play().catch(function () {});
+        };
+        window.addEventListener("pointerdown", retry, true);
+        window.addEventListener("keydown", retry, true);
+      });
+    }
+  }
+
+  function setBgVolume(v) {
+    bgBaseVolume = v;
+    if (bgAudio && !muted) bgAudio.volume = bgDuckCount > 0 ? bgDuckVolume : bgBaseVolume;
+  }
+
+  function bgDuck() {
+    bgDuckCount++;
+    if (bgAudio && !muted) bgAudio.volume = bgDuckVolume;
+  }
+  function bgUnduck() {
+    if (bgDuckCount > 0) bgDuckCount--;
+    if (bgAudio && !muted && bgDuckCount === 0) bgAudio.volume = bgBaseVolume;
+  }
+
   return {
     success, fanfare, tryAgain, click, hover, toggleMute, isMuted, ensureCtx,
     speak, speakPause, speakResume, speakStop, isSpeaking, isPausedSpeak, hasSpeech,
-    narrate, setStoryMode, isStoryMode
+    narrate, setStoryMode, isStoryMode,
+    startBgMusic, setBgVolume, bgDuck, bgUnduck
   };
 })();
 

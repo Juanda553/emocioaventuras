@@ -41,6 +41,10 @@ function init() {
   load();
   attachJuice();
   attachVoice();
+  // musica suave de fondo. el archivo lo agrega la autora en audio/music/background.mp3;
+  // si no esta, el Audio falla silencioso y el juego sigue igual.
+  // el navegador bloquea autoplay hasta el primer click — esta funcion ya maneja el reintento
+  Sound.startBgMusic("audio/music/sergequadrado-the-moon-song-113106.mp3");
   routeToCurrent();
 }
 
@@ -334,7 +338,7 @@ function renderStart() {
         <p class="GameSubtitle GameSubtitle-italic">Misión Emociones</p>
       </div>
       <div class="Hero-mascot">
-        <div class="Hero-bubble">El reino de las emociones necesita tu ayuda</div>
+        <button class="Hero-bubble" id="heroBubble" type="button" data-voice="El reino de las emociones necesita tu ayuda">El reino de las emociones necesita tu ayuda</button>
         <div class="Hero">${drawHero("happy")}</div>
       </div>
       <button class="StartCta" id="startBtn" type="button">empezar</button>
@@ -345,7 +349,14 @@ function renderStart() {
     if (allWorldsDone()) return renderFinal();
     renderMap();
   });
-  // narramos lo q dice el dragoncito
+  // el bocadillo es clickable: al tocarlo lo narramos (es la garantia de q suene, porq
+  // el click es user gesture y desbloquea el autoplay del navegador). tambien intentamos
+  // narrar de una al cargar — algunos navegadores lo permiten, otros no
+  const bubble = document.getElementById("heroBubble");
+  if (bubble) bubble.addEventListener("click", function () {
+    Sound.ensureCtx();
+    scheduleNarrate("El reino de las emociones necesita tu ayuda");
+  });
   scheduleNarrate("El reino de las emociones necesita tu ayuda");
 }
 
