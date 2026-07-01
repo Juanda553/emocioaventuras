@@ -346,7 +346,7 @@ function renderStart() {
     <div class="Screen StartScreen">
       <div class="StartScreen-top">
         <h1 class="GameTitle GameTitle-split">
-          <span class="Title-emocio">EMOCIO</span><span class="Title-aventura">AVENTURA</span>
+          <span class="Title-emocio">EMOCI</span><span class="Title-aventura">AVENTURA</span>
         </h1>
         <p class="GameSubtitle GameSubtitle-italic">Misión Emociones</p>
       </div>
@@ -669,8 +669,8 @@ function renderSingleChoice(body, ch) {
   wrap.className = "OptionList";
   ch.options.forEach(function (o, idx) {
     const b = document.createElement("button");
-    b.className = "OptionBtn";
-    b.textContent = o.text;
+    b.className = "OptionBtn" + (o.icon ? " OptionBtn-withIcon" : "");
+    b.innerHTML = (o.icon ? `<span class="OptionBtn-ico"><i class="bi ${o.icon}"></i></span>` : "") + `<span class="OptionBtn-txt">${esc(o.text)}</span>`;
     b.addEventListener("click", function () {
       Sound.ensureCtx();
       // si el reto marca allCorrect, cualquiera vale (es de expresion personal)
@@ -695,8 +695,8 @@ function renderStory(body, ch) {
   wrap.className = "OptionList";
   ch.options.forEach(function (o) {
     const b = document.createElement("button");
-    b.className = "OptionBtn";
-    b.textContent = o.text;
+    b.className = "OptionBtn" + (o.icon ? " OptionBtn-withIcon" : "");
+    b.innerHTML = (o.icon ? `<span class="OptionBtn-ico"><i class="bi ${o.icon}"></i></span>` : "") + `<span class="OptionBtn-txt">${esc(o.text)}</span>`;
     b.addEventListener("click", function () {
       Sound.ensureCtx();
       if (o.correct) {
@@ -811,8 +811,8 @@ function startQuiz(ch, boxEl) {
     const list = document.getElementById("quizOpts");
     q.options.forEach(function (o) {
       const b = document.createElement("button");
-      b.className = "OptionBtn";
-      b.textContent = o.text;
+      b.className = "OptionBtn" + (o.icon ? " OptionBtn-withIcon" : "");
+      b.innerHTML = (o.icon ? `<span class="OptionBtn-ico"><i class="bi ${o.icon}"></i></span>` : "") + `<span class="OptionBtn-txt">${esc(o.text)}</span>`;
       b.addEventListener("click", function () {
         Sound.ensureCtx();
         if (o.correct) {
@@ -883,8 +883,8 @@ function trafficQuiz(ch, body) {
     const list = document.getElementById("tlQuizOpts");
     q.options.forEach(function (o) {
       const b = document.createElement("button");
-      b.className = "OptionBtn";
-      b.textContent = o.text;
+      b.className = "OptionBtn" + (o.icon ? " OptionBtn-withIcon" : "");
+      b.innerHTML = (o.icon ? `<span class="OptionBtn-ico"><i class="bi ${o.icon}"></i></span>` : "") + `<span class="OptionBtn-txt">${esc(o.text)}</span>`;
       b.addEventListener("click", function () {
         Sound.ensureCtx();
         if (o.correct) {
@@ -939,7 +939,8 @@ function renderClassify(body, ch) {
   body.innerHTML = `
     <div class="ClassifyPool" id="pool">
       ${shuffle(ch.items.slice()).map(function (it, idx) {
-        return `<button class="ClassifyItem" draggable="true" data-box="${esc(it.box)}" data-i="${idx}">${esc(it.text)}</button>`;
+        const ico = it.icon ? `<span class="ClassifyItem-ico"><i class="bi ${it.icon}"></i></span>` : "";
+        return `<button class="ClassifyItem${it.icon ? " ClassifyItem-withIcon" : ""}" draggable="true" data-box="${esc(it.box)}" data-i="${idx}">${ico}<span class="ClassifyItem-txt">${esc(it.text)}</span></button>`;
       }).join("")}
     </div>
     <div class="ClassifyBoxes">

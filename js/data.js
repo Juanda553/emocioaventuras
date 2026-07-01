@@ -2,7 +2,7 @@
 // asi q si el cliente quiere cambiar un texto o un reto se hace aca y listo, sin tocar engine.js
 
 const GAME = {
-  title: "EmocioAventura – Misión Emociones: Aventura en el Reino",
+  title: "EmociAventura – Misión Emociones: Aventura en el Reino",
   finalBadge: "Maestro del Reino de las Emociones",
 
   worlds: [
@@ -50,9 +50,9 @@ const GAME = {
           question: "¿Qué te hace feliz?",
           allCorrect: true,
           options: [
-            { text: "Jugar", correct: true },
-            { text: "Familia", correct: true },
-            { text: "Amigos", correct: true }
+            { text: "Jugar", icon: "bi-controller", correct: true },
+            { text: "Familia", icon: "bi-people-fill", correct: true },
+            { text: "Amigos", icon: "bi-emoji-smile-fill", correct: true }
           ],
           feedbackOk: "¡Qué bonito! Todos sentimos alegría de formas diferentes"
         },
@@ -62,9 +62,9 @@ const GAME = {
           instruction: "Tu amigo está triste… ¿qué haces?",
           situation: "Tu amigo está triste… ¿qué haces?",
           options: [
-            { text: "Abrazarlo", correct: true },
-            { text: "Ignorarlo", correct: false },
-            { text: "Compartir un juguete", correct: true }
+            { text: "Abrazarlo", icon: "bi-heart-fill", correct: true },
+            { text: "Ignorarlo", icon: "bi-x-circle-fill", correct: false },
+            { text: "Compartir un juguete", icon: "bi-gift-fill", correct: true }
           ],
           feedbackOk: "¡Compartir alegría hace el mundo mejor!",
           feedbackFinal: "¡Compartir alegría hace el mundo mejor!"
@@ -95,30 +95,30 @@ const GAME = {
             {
               question: "¿Cómo se sentía la nube?",
               options: [
-                { text: "Feliz", correct: false },
-                { text: "Triste", correct: true },
-                { text: "Enojada", correct: false }
+                { text: "Feliz", icon: "bi-emoji-smile-fill", correct: false },
+                { text: "Triste", icon: "bi-emoji-frown-fill", correct: true },
+                { text: "Enojada", icon: "bi-emoji-angry-fill", correct: false }
               ]
             },
             {
               question: "¿Por qué estaba triste?",
               options: [
-                { text: "Estaba sola", correct: true },
-                { text: "Estaba jugando", correct: false }
+                { text: "Estaba sola", icon: "bi-person", correct: true },
+                { text: "Estaba jugando", icon: "bi-controller", correct: false }
               ]
             },
             {
               question: "¿Qué hizo la nube?",
               options: [
-                { text: "Lloró", correct: true },
-                { text: "Se escondió", correct: false }
+                { text: "Lloró", icon: "bi-droplet-fill", correct: true },
+                { text: "Se escondió", icon: "bi-eye-slash-fill", correct: false }
               ]
             },
             {
               question: "¿Qué la ayudó?",
               options: [
-                { text: "Hablar con alguien", correct: true },
-                { text: "Ignorar lo que sentía", correct: false }
+                { text: "Hablar con alguien", icon: "bi-chat-heart-fill", correct: true },
+                { text: "Ignorar lo que sentía", icon: "bi-x-circle-fill", correct: false }
               ]
             }
           ],
@@ -143,9 +143,9 @@ const GAME = {
           instruction: "¿Qué hago cuando estoy triste?",
           question: "¿Qué hago cuando estoy triste?",
           options: [
-            { text: "Lloro", correct: true },
-            { text: "Busco ayuda", correct: true },
-            { text: "Me río", correct: false }
+            { text: "Lloro", icon: "bi-droplet-fill", correct: true },
+            { text: "Busco ayuda", icon: "bi-people-fill", correct: true },
+            { text: "Me río", icon: "bi-emoji-laughing-fill", correct: false }
           ],
           feedbackOk: "Está bien expresar la tristeza"
         },
@@ -155,9 +155,9 @@ const GAME = {
           instruction: "¿Qué puedo hacer cuando estoy triste?",
           question: "¿Qué puedo hacer?",
           options: [
-            { text: "Hablar con alguien", correct: true },
-            { text: "Abrazar", correct: true },
-            { text: "Guardarlo todo", correct: false }
+            { text: "Hablar con alguien", icon: "bi-chat-heart-fill", correct: true },
+            { text: "Abrazar", icon: "bi-heart-fill", correct: true },
+            { text: "Guardarlo todo", icon: "bi-lock-fill", correct: false }
           ],
           feedbackOk: "Hablar y pedir un abrazo nos ayuda mucho"
         }
@@ -213,16 +213,16 @@ const GAME = {
             {
               question: "¿Qué haces primero cuando estás enojado?",
               options: [
-                { text: "Pensar", correct: false },
-                { text: "Parar", correct: true },
-                { text: "Gritar", correct: false }
+                { text: "Pensar", icon: "bi-lightbulb-fill", correct: false },
+                { text: "Parar", icon: "bi-stop-circle-fill", correct: true },
+                { text: "Gritar", icon: "bi-megaphone-fill", correct: false }
               ]
             },
             {
               question: "¿Y después de parar?",
               options: [
-                { text: "Pensar", correct: true },
-                { text: "Gritar", correct: false }
+                { text: "Pensar", icon: "bi-lightbulb-fill", correct: true },
+                { text: "Gritar", icon: "bi-megaphone-fill", correct: false }
               ]
             }
           ],
@@ -234,9 +234,9 @@ const GAME = {
           instruction: "¿Qué te ayuda a calmar el volcán?",
           question: "¿Qué te ayuda a calmarte?",
           options: [
-            { text: "Respirar profundo", correct: true },
-            { text: "Contar hasta 5", correct: true },
-            { text: "Golpear", correct: false }
+            { text: "Respirar profundo", icon: "bi-wind", correct: true },
+            { text: "Contar hasta 5", icon: "bi-123", correct: true },
+            { text: "Golpear", icon: "bi-fire", correct: false }
           ],
           feedbackOk: "¡Has calmado el volcán!"
         }
@@ -265,30 +265,30 @@ const GAME = {
             {
               question: "¿Cómo se sentía el niño?",
               options: [
-                { text: "Feliz", correct: false },
-                { text: "Asustado", correct: true },
-                { text: "Enojado", correct: false }
+                { text: "Feliz", icon: "bi-emoji-smile-fill", correct: false },
+                { text: "Asustado", icon: "bi-emoji-dizzy-fill", correct: true },
+                { text: "Enojado", icon: "bi-emoji-angry-fill", correct: false }
               ]
             },
             {
               question: "¿Qué le daba miedo?",
               options: [
-                { text: "La oscuridad", correct: true },
-                { text: "Jugar", correct: false }
+                { text: "La oscuridad", icon: "bi-moon-stars-fill", correct: true },
+                { text: "Jugar", icon: "bi-controller", correct: false }
               ]
             },
             {
               question: "¿Qué hizo el niño?",
               options: [
-                { text: "Encendió una luz", correct: true },
-                { text: "Se quedó solo llorando", correct: false }
+                { text: "Encendió una luz", icon: "bi-lightbulb-fill", correct: true },
+                { text: "Se quedó solo llorando", icon: "bi-emoji-frown-fill", correct: false }
               ]
             },
             {
               question: "¿Qué lo ayudó?",
               options: [
-                { text: "Pedir ayuda", correct: true },
-                { text: "Esconderse siempre", correct: false }
+                { text: "Pedir ayuda", icon: "bi-people-fill", correct: true },
+                { text: "Esconderse siempre", icon: "bi-eye-slash-fill", correct: false }
               ]
             }
           ],
@@ -364,10 +364,10 @@ const GAME = {
           instruction: "Lleva cada situación a su caja",
           boxes: ["Agradable", "Desagradable"],
           items: [
-            { text: "Un regalo inesperado", box: "Agradable" },
-            { text: "Una fiesta sorpresa", box: "Agradable" },
-            { text: "Un globo que explota fuerte", box: "Desagradable" },
-            { text: "Tropezar de repente", box: "Desagradable" }
+            { text: "Un regalo inesperado", icon: "bi-gift-fill", box: "Agradable" },
+            { text: "Una fiesta sorpresa", icon: "bi-balloon-heart-fill", box: "Agradable" },
+            { text: "Un globo que explota fuerte", icon: "bi-exclamation-diamond-fill", box: "Desagradable" },
+            { text: "Tropezar de repente", icon: "bi-arrow-down-circle-fill", box: "Desagradable" }
           ],
           feedbackOk: "¡Muy bien! No todas las sorpresas son iguales"
         },
@@ -390,9 +390,9 @@ const GAME = {
           instruction: "¿Qué hago cuando me sorprendo?",
           question: "¿Qué hago cuando me sorprendo?",
           options: [
-            { text: "Respiro y observo", correct: true },
-            { text: "Me asusto y grito", correct: false },
-            { text: "Pregunto qué pasó", correct: true }
+            { text: "Respiro y observo", icon: "bi-eye-fill", correct: true },
+            { text: "Me asusto y grito", icon: "bi-megaphone-fill", correct: false },
+            { text: "Pregunto qué pasó", icon: "bi-question-circle-fill", correct: true }
           ],
           feedbackOk: "¡Muy bien! Respirar y observar nos ayuda"
         }
@@ -441,9 +441,9 @@ const GAME = {
           instruction: "¿Qué hago cuando algo me da asco?",
           question: "¿Qué hago?",
           options: [
-            { text: "Me alejo", correct: true },
-            { text: "Lo toco igual", correct: false },
-            { text: "Aviso a un adulto", correct: true }
+            { text: "Me alejo", icon: "bi-arrow-right-circle-fill", correct: true },
+            { text: "Lo toco igual", icon: "bi-hand-index-thumb-fill", correct: false },
+            { text: "Aviso a un adulto", icon: "bi-people-fill", correct: true }
           ],
           feedbackOk: "¡Correcto! Alejarse y avisar es lo mejor"
         },
