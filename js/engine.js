@@ -96,8 +96,9 @@ function attachVoice() {
 }
 
 // narra la instruccion principal de la pantalla actual.
-// junta el globo de la mascota + la pregunta si hay, en partes separadas
-// (cada parte va al manifest por su cuenta — asi no hay concatenaciones q no esten pregrabadas)
+// junta el globo de la mascota + la pregunta + las opciones (para q en movil,
+// donde no hay hover, el niño escuche todo sin tener q tocar).
+// las caritas (pick-face) no se leen — son visuales, no tienen texto
 function autoNarrateMain(extra) {
   if (Sound.isMuted() || Sound.isStoryMode()) return;
   const parts = [];
@@ -106,7 +107,13 @@ function autoNarrateMain(extra) {
   if (bubble) parts.push(bubble.textContent.trim());
   const q = document.querySelector(".QuestionText");
   if (q) parts.push(q.textContent.trim());
-  // quito repetidos por si la instruccion y la pregunta son iguales
+  // opciones textuales dentro del reto (no aplica para pick-face porq son SVG)
+  const optSel = ".ChallengeBody .OptionBtn, .ChallengeBody .ChoiceCard, .ChallengeBody .ClassifyItem, .ChallengeBody .Light";
+  Array.prototype.forEach.call(document.querySelectorAll(optSel), function (n) {
+    const t = (n.textContent || "").replace(/\s+/g, " ").trim();
+    if (t) parts.push(t);
+  });
+  // quito repetidos
   const seen = {};
   const clean = parts.filter(function (p) { if (!p || seen[p]) return false; seen[p] = 1; return true; });
   if (!clean.length) return;
@@ -238,6 +245,7 @@ function hud(showBack) {
       </div>
       <div class="Hud-actions">
         ${showBack ? `<button class="btn IconBtn" id="backToMap" title="Volver al mapa"><i class="bi bi-map-fill"></i></button>` : ""}
+        <button class="btn IconBtn" id="repeatBtn" title="Escuchar de nuevo"><i class="bi bi-volume-up-fill"></i></button>
         <button class="btn IconBtn" id="muteBtn" title="Silenciar"><i class="bi ${muteIcon}"></i></button>
         <button class="btn IconBtn" id="resetBtn" title="Reiniciar progreso"><i class="bi bi-arrow-counterclockwise"></i></button>
       </div>
@@ -264,6 +272,11 @@ function wireHud() {
   });
   const back = document.getElementById("backToMap");
   if (back) back.addEventListener("click", function () { Sound.click(); state.currentWorld = null; save(); renderMap(); });
+  const repeat = document.getElementById("repeatBtn");
+  if (repeat) repeat.addEventListener("click", function () {
+    Sound.ensureCtx(); Sound.click();
+    autoNarrateMain();
+  });
 }
 
 // boton grande estandar
